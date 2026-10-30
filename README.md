@@ -4,7 +4,7 @@ CampusFest is a college event and fest management app for students, organisers, 
 
 ## Features
 
-- Search and browse upcoming campus events; organisers create, publish, and cancel events.
+- Search and browse upcoming campus events; organisers create, publish, and cancel events. Draft/cancelled events can be deleted only when they have no registration, volunteer, or feedback history.
 - Student and volunteer public signup, login, account profiles, and role-specific workspaces. Organiser/admin roles cannot be self-selected.
 - Free registration with duplicate protection, atomic capacity limits, cancellation, and private attendance passes.
 - Organiser participant lists and CSV export; authorised organiser/admin/accepted-volunteer check-in.
@@ -74,7 +74,7 @@ Click **My space** after signing in to open the role-specific workspace. The acc
 
 Email delivery is optional for local use. To enable it, fill in `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and optionally `EMAIL_FROM` in `.env`, then restart the API. Use credentials for an SMTP account you control; do not put them in the frontend or Jira.
 
-CampusFest emails a welcome message after signup, a confirmation after free registration, event-cancellation notices, volunteer-application status updates, and a PDF attendance certificate after successful check-in. Attendees can download the same certificate from their workspace. Without SMTP, registration/check-in still succeeds and the API reports that email was not sent; the certificate remains downloadable.
+CampusFest emails a welcome message after signup, a confirmation after free registration, event-cancellation notices, volunteer-application status updates, and a PDF attendance certificate after successful check-in. Attendees can download the same certificate from their workspace. Without SMTP, registration and check-in still succeed without an email-delivery notice; the certificate remains downloadable.
 
 ## Jira import
 
@@ -87,6 +87,25 @@ The project backlog is documented in [docs/JIRA_PLAN.md](./docs/JIRA_PLAN.md), a
 5. In the backlog, create a sprint, drag in the few demo issues you plan to show, then start the sprint during the demo. Move an issue through the board only when you actually demonstrate or complete that work.
 
 The CSV uses Jira's `Work item ID`/`Parent` hierarchy format and is a one-time import template, not a live integration. Jira issue keys are assigned during import. No statuses, commits, or app changes sync automatically from this repository. Never upload `.env` or paste passwords, SMTP credentials, JWT secrets, or bootstrap keys into Jira.
+
+## Free live staging deployment
+
+The repository includes a free-tier demo setup: Vercel serves the Vite frontend, Render runs the Express API, and MongoDB Atlas stores persistent demo data. This is for demonstrations, not production. Render's free API service can sleep after inactivity, so its first request may take about a minute. Vercel and Atlas free-tier limits and current provider terms apply.
+
+1. Push the project to a GitHub repository. Confirm `.env` and `.mongo-data` are not tracked; never upload credentials.
+2. In MongoDB Atlas, create a free cluster, a database user with read/write access only to the CampusFest database, and a database connection string. Add the Render service's outbound IP ranges to the Atlas IP access list when available. If the free service requires a broad IP rule for a short classroom demo, use a unique strong database password and fictional demo data only; remove that rule afterwards.
+3. In Vercel, select the standalone **web (Vite)** application and set its Root Directory to `web`. The `web/vercel.json` configuration installs/builds from that directory and keeps `/api/*` same-origin so secure session cookies work. Do not use the root-workspace command `npm run build -w web` when the Root Directory is `web`. Deploy once to obtain the Vercel production URL.
+4. In Render, create a Blueprint from the repository using `render.yaml`. Render hosts only the API; Vercel builds the frontend. Keep the Render build command as `npm ci --omit=dev` (do not use `npm run build` there) and start command as `npm run start -w api`. Set `MONGODB_URI` to the Atlas connection string and `FRONTEND_URL` to the exact Vercel production URL (scheme and hostname, no trailing slash). Render generates `JWT_SECRET`. Do not configure SMTP. Wait for `/api/health` to pass and note the Render service's public URL.
+5. In `vercel.json`, replace `https://replace-with-your-render-api.onrender.com` with the exact Render service URL, keeping `/api/:path*` at the end. Commit and push that change so Vercel redeploys. The browser then calls the API through Vercel on the same origin; do not set `VITE_API_URL` to the Render URL.
+6. Add the exact Vercel production URL to Render's `FRONTEND_URL` if it changed after redeployment. Redeploy the API after changing environment values.
+7. Create the first organiser directly in the Atlas database using the one-time local CLI provisioner. In a private local `.env` (never committed), set `NODE_ENV=production`, `MONGODB_URI` to Atlas, and `PROVISION_ORGANISER_NAME`, `PROVISION_ORGANISER_EMAIL`, and a unique `PROVISION_ORGANISER_PASSWORD` (12-128 characters). From the repository root, run `npm run provision:organiser -w api`. The command refuses localhost databases and refuses to overwrite an existing account. Remove those three `PROVISION_ORGANISER_*` values from `.env` after success. Students and volunteers can then sign up from the public site.
+8. Verify the public Vercel site, sign-in/sign-out, create/publish a fictional event, student registration, volunteer application/assignment, check-in, and attendee certificate download. Test in a private/incognito browser and confirm API health. Avoid real personal data.
+
+If provisioning locally from your network is blocked by the Atlas access list, temporarily allow your current public IP, run the one-time command, then remove that IP rule. Keep credentials in provider dashboards and the ignored local `.env`, not in Jira, GitHub, screenshots, or chat.
+
+For the Jira staging issue, add the Vercel URL, Render health URL, deployment date, and verification notes as a Jira comment. Move the issue to **Done** only after the public flow has been tested. Jira does not receive deployment status automatically.
+
+Provider instructions: [Vercel Vite deployment](https://vercel.com/docs/frameworks/frontend/vite), [Render web services](https://render.com/docs/web-services) and [free service limits](https://render.com/docs/free), [MongoDB Atlas IP access lists](https://www.mongodb.com/docs/atlas/security/ip-access-list/).
 
 ## API outline
 
@@ -137,13 +156,12 @@ These tests do not replace integration tests against disposable MongoDB or deliv
 
 ## Deployment
 
-Deployment is optional and has not been performed. A production setup needs a managed MongoDB database, HTTPS API/frontend hosting, and secrets configured in the hosting environment. Set `MONGODB_URI`, a strong `JWT_SECRET`, `NODE_ENV=production`, `API_PORT`, and `FRONTEND_URL`; configure SMTP only if email delivery is wanted. Use a same-origin `/api` reverse proxy or carefully configured same-site domains for the session cookie. Build with `npm run build -w web` and start the API with `npm start -w api`.
+Deployment is optional and has not been performed. Follow [Free live staging deployment](#free-live-staging-deployment) for the Vercel/Render/Atlas demo setup. Production needs a managed MongoDB database, HTTPS hosting, and secrets configured in the hosting environment. Set `MONGODB_URI`, a strong `JWT_SECRET`, `NODE_ENV=production`, and `FRONTEND_URL`; set `API_PORT` only if the host does not provide `PORT`. Configure SMTP only if email delivery is wanted. Use a same-origin `/api` reverse proxy for the session cookie.
 
 ## Known limitations
 
 - QR passes are available, but camera-based scanning is not implemented; staff can enter the pass code manually.
 - Email delivery requires a working SMTP provider and is not integration-tested without one.
-- Advanced organiser event-edit/cancel forms and volunteer-application review/shift assignment are not fully surfaced in the UI, although their supported API operations are available.
 - The administrator panel covers role management but not every moderation, analytics, or reporting workflow.
-- MongoDB integration, authorization, and concurrent-capacity tests remain to be added.
+- MongoDB integration tests cover core role boundaries, registration capacity, cancellation, attendance, certificates, volunteer assignment, feedback, and administration; SMTP delivery against a real provider is not tested.
 - The policy/legal copy is introductory project copy and should be reviewed before a real institutional launch.

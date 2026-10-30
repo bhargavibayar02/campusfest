@@ -57,7 +57,7 @@ Acceptance criteria are suitable for Jira story/task descriptions. Jira keys are
 | P0 | Story | 4 | Register for a free event safely | Duplicate registration is rejected; atomic capacity never oversells; confirmed registration receives a private pass. |
 | P0 | Story | 5 | Check in authorised attendees | Only owner/admin/accepted event volunteer can check in; invalid or repeated passes are rejected. |
 | P0 | Story | 5 | Generate and download attendance certificates | A checked-in attendee can download a PDF for their own registration; unverified and other users' registrations are denied. |
-| P1 | Story | 7 | Send email notifications | Configured SMTP sends welcome, registration, cancellation, volunteer-status, and certificate emails; missing SMTP is reported without losing the underlying action. |
+| P1 | Story | 7 | Send email notifications | Configured SMTP sends welcome, registration, cancellation, volunteer-status, and certificate emails; without SMTP, the underlying action succeeds without an email-delivery notice. |
 | P1 | Story | 6 | View student registrations and passes | The student sees only their registrations, statuses, passes, certificates, and in-app notifications. |
 | P1 | Story | 6 | Manage event roster and attendance | Owner can view/export only their event's roster; CSV neutralises formula prefixes. |
 | P1 | Story | 6 | Apply for volunteer duty | Volunteer can apply once; owner can review the application and assign duty/shift/status; accepted volunteers may check in. |
@@ -68,7 +68,7 @@ Acceptance criteria are suitable for Jira story/task descriptions. Jira keys are
 | P1 | Task | 10 | Review accessibility and responsive behavior | Keyboard use, focus, contrast, labels, mobile layout, and reduced motion are verified. |
 | P1 | Task | 11 | Document local setup and Jira import | Environment variables, role logins, email configuration, import steps, and known gaps match actual behavior. |
 | P2 | Story | 5 | Add camera-based check-in | Browser permission-aware scanning calls the same server-side validation as manual code entry. |
-| P2 | Task | 11 | Deploy a staging environment | HTTPS, same-origin API routing, CORS, secrets, database access, SMTP, and health checks are verified in staging. |
+| P2 | Task | 11 | Deploy and demonstrate free staging | Vercel serves the SPA and same-origin API proxy; Render API connects to Atlas; HTTPS/CORS/session cookies/health checks pass; organiser, student, and volunteer happy paths are demonstrated. SMTP and payments are explicitly out of scope. |
 
 ## Suggested four-week sprint plan
 
@@ -115,7 +115,7 @@ Sprint assignments are suggestions only and do not represent historical Jira com
 | Risk | Mitigation / status |
 |---|---|
 | MongoDB is unavailable | Development server attempts persistent embedded MongoDB; production requires configured MongoDB. |
-| SMTP is not configured or unavailable | Registration/check-in still complete; UI/API reports email delivery status and certificates remain downloadable. |
+| SMTP is not configured or unavailable | Registration/check-in still complete without an email-delivery notice; certificates remain downloadable. SMTP is excluded from the staging demo. |
 | No camera scanner | Manual pass entry is available; camera UX remains backlog. |
 | Standalone MongoDB cannot provide multi-document transactions | Capacity reservation is atomic and compensation is used; integration testing and transaction review remain. |
 | Cross-site cookie restrictions | Use a same-origin API proxy or carefully configured same-site domains and HTTPS. |

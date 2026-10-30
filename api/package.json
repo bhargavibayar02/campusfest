@@ -6,7 +6,8 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "test": "node --test",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed.js",
+    "provision:organiser": "node src/provision-organiser.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

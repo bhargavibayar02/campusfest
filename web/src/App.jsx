@@ -124,7 +124,7 @@ function Header() {
           {user ? (
             <div className="nav-account">
               <Link to={roleHome[user.role]} className="account-link" onClick={() => setMenuOpen(false)}><CircleUserRound size={17} /> My space</Link>
-              <button type="button" className="nav-signin nav-logout" onClick={logout} disabled={busy}>{busy ? 'Signing outâ€¦' : 'Sign out'}</button>
+              <button type="button" className="nav-signin nav-logout" onClick={logout} disabled={busy}>{busy ? 'Signing out...' : 'Sign out'}</button>
               {logoutError && <span className="nav-error" role="alert">{logoutError}</span>}
             </div>
           ) : <Link to="/login" className="nav-signin" onClick={() => setMenuOpen(false)}>Sign in <ArrowUpRight size={15} /></Link>}
@@ -183,7 +183,7 @@ function HomePage() {
               <form className="hero-search" onSubmit={search}>
                 <Search size={18} />
                 <label className="sr-only" htmlFor="hero-search">Search campus events</label>
-                <input id="hero-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search events, workshops, festsâ€¦" />
+                <input id="hero-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search events, workshops, fests..." />
                 <button type="submit" aria-label="Search events"><ArrowRight size={19} /></button>
               </form>
               <div className="hero-actions"><Link className="button button-primary" to="/events">Explore events <ArrowUpRight size={16} /></Link><a className="button button-quiet" href="#how-it-works">See how it works <ArrowDownRight size={16} /></a></div>
@@ -211,7 +211,7 @@ function HomePage() {
         <section className="how-section" id="how-it-works">
           <div className="how-heading"><p className="eyebrow">A BETTER KIND OF CAMPUS CALENDAR</p><h2>Less planning.<br /><em>More being there.</em></h2></div>
           <div className="how-steps">
-            <article><span className="step-number">01</span><Compass size={21} /><h3>Find your thing</h3><p>Explore whatâ€™s happening across campusâ€”talks, workshops, stages and everything in between.</p></article>
+            <article><span className="step-number">01</span><Compass size={21} /><h3>Find your thing</h3><p>Explore what's happening across campus-talks, workshops, stages and everything in between.</p></article>
             <article><span className="step-number">02</span><Ticket size={21} /><h3>Save your spot</h3><p>Register in a few taps and keep your upcoming plans together in one place.</p></article>
             <article><span className="step-number">03</span><Users size={21} /><h3>Show up together</h3><p>Check in with your pass, meet your people, and make the day your own.</p></article>
           </div>
@@ -224,7 +224,7 @@ function HomePage() {
 }
 
 function Footer() {
-  return <footer className="site-footer"><Link to="/" className="brand"><span className="brand-mark"><span /></span><span className="brand-name">CAMPUS<span>FEST</span></span></Link><p>Good things happen when we show up.</p><div><Link to="/events">Discover events</Link><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link></div><span className="footer-copy">Â© {new Date().getFullYear()} CampusFest Â· Built for campus life</span></footer>
+  return <footer className="site-footer"><Link to="/" className="brand"><span className="brand-mark"><span /></span><span className="brand-name">CAMPUS<span>FEST</span></span></Link><p>Good things happen when we show up.</p><div><Link to="/events">Discover events</Link><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link></div><span className="footer-copy">(c) {new Date().getFullYear()} CampusFest / Built for campus life</span></footer>
 }
 
 export function EventsPage() {
@@ -267,7 +267,7 @@ export function EventsPage() {
   }
   return (
     <main className="page-shell">
-      <div className="page-heading"><p className="eyebrow">THE CAMPUS CALENDAR</p><h1>Find your <em>next thing.</em></h1><p>Good talks, loud rooms, new skills, and the people you havenâ€™t met yet.</p></div>
+      <div className="page-heading"><p className="eyebrow">THE CAMPUS CALENDAR</p><h1>Find your <em>next thing.</em></h1><p>Good talks, loud rooms, new skills, and the people you haven't met yet.</p></div>
       <div className="event-toolbar">
         <label className="filter-search"><Search size={17} /><span className="sr-only">Search events</span><input value={search} onChange={(event) => updateQuery('search', event.target.value)} placeholder="Search events or venues" /></label>
         <label className="select-filter"><Filter size={15} /><span className="sr-only">Filter by category</span><select value={category} onChange={(event) => updateQuery('category', event.target.value)}><option value="">All categories</option>{categories.slice(1).map((value) => <option key={value}>{value}</option>)}</select><ChevronDown size={14} /></label>
@@ -305,11 +305,9 @@ function EventPage() {
     setMessage('')
     setError('')
     try {
-      const { registration: created, emailNotificationSent } = await api(`/events/${id}/register`, { method: 'POST' })
+      const { registration: created } = await api(`/events/${id}/register`, { method: 'POST' })
       setRegistration(created)
-      setMessage(emailNotificationSent
-        ? 'You’re in. Your free registration is confirmed, and a confirmation email was sent.'
-        : 'You’re in. Your free registration is confirmed. Email delivery is unavailable until SMTP is configured.')
+      setMessage('You’re in. Your free registration is confirmed.')
     } catch (failure) {
       setError(failure.message)
     } finally {
@@ -317,13 +315,13 @@ function EventPage() {
     }
   }
 
-  if (loading) return <main className="page-shell"><div className="page-loading">Loading eventâ€¦</div></main>
+  if (loading) return <main className="page-shell"><div className="page-loading">Loading event...</div></main>
   if (error && !event) return <main className="page-shell"><Notice>{error}</Notice><Link className="text-link" to="/events">Back to events <ArrowRight size={15} /></Link></main>
   if (!event) return <Navigate to="/events" replace />
   const seats = Math.max(0, event.capacity - event.registeredCount)
   return (
     <main className="page-shell event-detail-shell">
-      <Link className="back-link" to="/events">â† Back to events</Link>
+      <Link className="back-link" to="/events">Back to events</Link>
       <div className="detail-art"><Artwork category={event.category} /><span className="event-category">{event.category}</span></div>
       <div className="detail-layout">
         <article className="detail-copy">
@@ -340,7 +338,7 @@ function EventPage() {
           <div className="seats-line"><span><Users size={15} />{seats} places left</span><span>{event.capacity} total</span></div>
           <div className="capacity-track"><span style={{ width: `${Math.min(100, event.registeredCount / event.capacity * 100)}%` }} /></div>
           <button type="button" className="button button-primary button-wide" onClick={register} disabled={busy || seats === 0 || registration?.status === 'confirmed'}>
-            {busy ? 'Workingâ€¦' : registration?.status === 'confirmed' ? 'Youâ€™re registered' : seats === 0 ? 'Fully booked' : 'Register for free'}
+            {busy ? 'Working...' : registration?.status === 'confirmed' ? 'Registration confirmed' : seats === 0 ? 'Fully booked' : 'Register for free'}
             {!busy && registration?.status !== 'confirmed' && seats > 0 && <ArrowRight size={17} />}
           </button>
           <p className="secure-note"><ShieldCheck size={15} />Your place is confirmed after registration.</p>
@@ -391,7 +389,7 @@ function AuthPage({ mode }) {
   return (
     <main className="auth-page">
       <div className="auth-art"><Artwork team /><div className="auth-art-copy"><span>MAKE THE MOST OF</span><strong>YOUR<br />CAMPUS<br /><em>YEARS.</em></strong></div></div>
-      <div className="auth-form-wrap"><Link to="/" className="back-link">â† Back to CampusFest</Link><p className="eyebrow">{isRegister ? 'YOUR NEXT CHAPTER' : 'GOOD TO HAVE YOU BACK'}</p><h1>{isRegister ? 'Join the campus.' : 'Welcome back.'}</h1>      <p className="auth-subtitle">{isRegister ? 'Create a student or volunteer account to join campus events.' : 'Sign in to pick up where you left off.'}</p>
+      <div className="auth-form-wrap"><Link to="/" className="back-link">Back to CampusFest</Link><p className="eyebrow">{isRegister ? 'YOUR NEXT CHAPTER' : 'GOOD TO HAVE YOU BACK'}</p><h1>{isRegister ? 'Join the campus.' : 'Welcome back.'}</h1>      <p className="auth-subtitle">{isRegister ? 'Create a student or volunteer account to join campus events.' : 'Sign in to pick up where you left off.'}</p>
         <form className="auth-form" onSubmit={submit}>
           {isRegister && <label>Full name<input name="name" autoComplete="name" required minLength="2" maxLength="100" value={form.name} onChange={update} placeholder="Your name" /></label>}
           <label>College email<input name="email" type="email" autoComplete="email" required maxLength="254" value={form.email} onChange={update} placeholder="you@college.edu" /></label>
@@ -399,7 +397,7 @@ function AuthPage({ mode }) {
           {isRegister && <label>Account type<select name="role" value={form.role} onChange={update}><option value="student">Student</option><option value="volunteer">Volunteer</option></select></label>}
           {isRegister && <div className="form-row"><label>Department <span className="optional">(optional)</span><input name="department" maxLength="100" value={form.department} onChange={update} placeholder="e.g. Computer Science" /></label>{form.role === 'student' && <label>Year <span className="optional">(optional)</span><select name="yearOfStudy" value={form.yearOfStudy} onChange={update}><option value="">Choose</option>{[1, 2, 3, 4].map((year) => <option key={year} value={year}>Year {year}</option>)}</select></label>}</div>}
           <Notice>{error}</Notice>
-          <button type="submit" className="button button-primary button-wide" disabled={busy}>{busy ? 'Please waitâ€¦' : isRegister ? 'Create student account' : 'Sign in'} <ArrowRight size={17} /></button>
+          <button type="submit" className="button button-primary button-wide" disabled={busy}>{busy ? 'Please wait...' : isRegister ? 'Create student account' : 'Sign in'} <ArrowRight size={17} /></button>
         </form>
         <p className="auth-switch">{isRegister ? 'Already have an account?' : 'New to CampusFest?'} <Link to={isRegister ? '/login' : '/register'}>{isRegister ? 'Sign in' : 'Create a student account'}</Link></p>
         {!isRegister && <p className="auth-role-help">Organiser and volunteer accounts are issued by a CampusFest administrator. Development demo login emails are listed in the README.</p>}
@@ -411,7 +409,7 @@ function AuthPage({ mode }) {
 
 function Protected({ roles, children }) {
   const { user, authLoading } = useSession()
-  if (authLoading) return <main className="page-shell"><div className="page-loading">Checking your sessionâ€¦</div></main>
+  if (authLoading) return <main className="page-shell"><div className="page-loading">Checking your session...</div></main>
   if (!user) return <Navigate to="/login" replace />
   if (roles && !roles.includes(user.role)) return <Navigate to="/unauthorised" replace />
   return children
@@ -496,6 +494,18 @@ function DashboardPage() {
       await refresh()
     } catch (failure) { setError(failure.message) }
   }
+  const deleteEvent = async (event) => {
+    if (!window.confirm(`Permanently delete "${event.title}"? Only draft or cancelled events without registrations, volunteer applications, or feedback can be deleted.`)) return
+    setError('')
+    setMessage('')
+    try {
+      await api(`/events/${event._id}`, { method: 'DELETE' })
+      setMessage(`Deleted "${event.title}".`)
+      await refresh()
+    } catch (failure) {
+      setError(failure.message)
+    }
+  }
   return (
     <main className="dashboard-shell">
       <div className="dashboard-top"><div><p className="eyebrow">{user.role.toUpperCase()} / CAMPUSFEST</p><h1>{title}<span>.</span></h1><p>Welcome in, {user.name}.</p></div><Link to="/events" className="button button-outline">Explore events <ArrowUpRight size={16} /></Link></div>
@@ -511,10 +521,10 @@ function DashboardPage() {
           </div>
           {user.role === 'administrator' && <Metric label="Platform users" value={dashboard.metrics.userCount} icon={<CircleUserRound size={19} />} />}
           <div className="dashboard-section-heading"><div><p className="eyebrow">YOUR PROGRAMME</p><h2>Manage events</h2></div><Link className="button button-primary" to="/organiser/events/new">Create event <ArrowRight size={16} /></Link></div>
-          {eventList.length ? <div className="dashboard-table-wrap"><table className="data-table"><thead><tr><th>Event</th><th>Date</th><th>Places</th><th>Status</th><th>Manage</th></tr></thead><tbody>{eventList.map((event) => <tr key={event._id}><td><strong>{event.title}</strong><small>{event.category} Â· {event.venue}</small></td><td>{formatDate(event.startAt)}</td><td>{event.registeredCount} / {event.capacity}</td><td><span className={`status-pill status-${event.status}`}>{event.status}</span></td><td><Link to={`/organiser/events/${event._id}`}>Participants <ArrowRight size={14} /></Link><Link to={`/organiser/events/${event._id}/volunteers`}>Volunteers <ArrowRight size={14} /></Link></td></tr>)}</tbody></table></div> : <div className="empty-state"><CalendarDays size={22} /><strong>No events yet.</strong><span>Create your first event to start building the programme.</span></div>}
+          {eventList.length ? <div className="dashboard-table-wrap"><table className="data-table"><thead><tr><th>Event</th><th>Date</th><th>Places</th><th>Status</th><th>Manage</th></tr></thead><tbody>{eventList.map((event) => <tr key={event._id}><td><strong>{event.title}</strong><small>{event.category} · {event.venue}</small></td><td>{formatDate(event.startAt)}</td><td>{event.registeredCount} / {event.capacity}</td><td><span className={`status-pill status-${event.status}`}>{event.status}</span></td><td className="event-manage-actions"><Link to={`/organiser/events/${event._id}`}>Participants <ArrowRight size={14} /></Link><Link to={`/organiser/events/${event._id}/volunteers`}>Volunteers <ArrowRight size={14} /></Link><button className="button button-outline button-small event-delete-button" type="button" onClick={() => deleteEvent(event)}>Delete event</button></td></tr>)}</tbody></table></div> : <div className="empty-state"><CalendarDays size={22} /><strong>No events yet.</strong><span>Create your first event to start building the programme.</span></div>}
           {user.role === 'administrator' && <AdminPanel />}</>}
-          {user.role === 'student' && <><SectionHeading eyebrow="YOUR RSVP LIST" title="Plans worth keeping." copy="Your free registrations and attendance passes live here." link="Find more events" /><div className="registration-list">{dashboard.registrations?.length ? dashboard.registrations.map((registration) => <article className="registration-row" key={registration._id}><div className="registration-date">{registration.event ? new Date(registration.event.startAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'â€”'}</div><div className="registration-info"><Link to={`/events/${registration.event?._id}`}><strong>{registration.event?.title || 'Event removed'}</strong></Link><span>{registration.event?.venue || ''}</span><small>{registration.reference} · Free entry</small></div><span className={`status-pill status-${registration.status}`}>{registration.status}</span>{registration.attendanceToken && <AttendancePass token={registration.attendanceToken} />}{registration.status === 'confirmed' && <button className="button button-outline button-small" type="button" onClick={() => cancelRegistration(registration._id)}>Cancel</button>}{registration.status === 'attended' && <a className="button button-outline button-small" href={`/api/events/registrations/${registration._id}/certificate`}>Download certificate</a>}{registration.status === 'attended' && !dashboard.feedbackEventIds?.includes(registration.event?._id) && <FeedbackForm eventId={registration.event?._id} onSubmitted={refresh} />}</article>) : <div className="empty-state"><Ticket size={22} /><strong>Your next great story is waiting.</strong><span>Events you register for will show up here.</span><Link to="/events" className="text-link">Browse events <ArrowRight size={15} /></Link></div>}</div><div className="notification-list"><h2>Recent updates</h2>{dashboard.notifications?.length ? dashboard.notifications.map((item) => <p key={item._id}><span />{item.message}<small>{formatDate(item.createdAt)}</small></p>) : <p className="muted-copy">No updates to show right now.</p>}</div></>}
-          {user.role === 'volunteer' && <><div className="dashboard-section-heading"><div><p className="eyebrow">YOUR VOLUNTEER CALLS</p><h2>Applications & assignments</h2></div><Link className="button button-outline" to="/volunteer/opportunities">Browse opportunities <ArrowRight size={16} /></Link></div>{dashboard.applications?.length ? dashboard.applications.map((application) => <article className="registration-row" key={application._id}><div className="registration-info"><strong>{application.event.title}</strong><span>{application.event.venue} Â· {formatDate(application.event.startAt)}</span><small>{application.roleInterest}{application.duty ? ` Â· ${application.duty}` : ''}{application.shift ? ` Â· ${application.shift}` : ''}</small></div><span className={`status-pill status-${application.status}`}>{application.status}</span>{application.status === 'accepted' && <Link className="button button-outline button-small" to={`/volunteer/events/${application.event._id}/checkin`}>Check-in desk <ArrowRight size={14} /></Link>}</article>) : <div className="empty-state"><Users size={22} /><strong>Ready to be part of the crew?</strong><span>Find an event that could use a hand.</span><Link to="/volunteer/opportunities" className="text-link">Browse opportunities <ArrowRight size={15} /></Link></div>}</>}
+          {user.role === 'student' && <><SectionHeading eyebrow="YOUR RSVP LIST" title="Plans worth keeping." copy="Your free registrations and attendance passes live here." link="Find more events" /><div className="registration-list">{dashboard.registrations?.length ? dashboard.registrations.map((registration) => <article className="registration-row" key={registration._id}><div className="registration-date">{registration.event ? new Date(registration.event.startAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '-'}</div><div className="registration-info"><Link to={`/events/${registration.event?._id}`}><strong>{registration.event?.title || 'Event removed'}</strong></Link><span>{registration.event?.venue || ''}</span><small>{registration.reference} · Free entry</small></div><span className={`status-pill status-${registration.status}`}>{registration.status}</span>{registration.attendanceToken && <AttendancePass token={registration.attendanceToken} />}{registration.status === 'confirmed' && <button className="button button-outline button-small" type="button" onClick={() => cancelRegistration(registration._id)}>Cancel</button>}{registration.status === 'attended' && <a className="button button-outline button-small" href={`/api/events/registrations/${registration._id}/certificate`}>Download certificate</a>}{registration.status === 'attended' && !dashboard.feedbackEventIds?.includes(registration.event?._id) && <FeedbackForm eventId={registration.event?._id} onSubmitted={refresh} />}</article>) : <div className="empty-state"><Ticket size={22} /><strong>Your next great story is waiting.</strong><span>Events you register for will show up here.</span><Link to="/events" className="text-link">Browse events <ArrowRight size={15} /></Link></div>}</div><div className="notification-list"><h2>Recent updates</h2>{dashboard.notifications?.length ? dashboard.notifications.map((item) => <p key={item._id}><span />{item.message}<small>{formatDate(item.createdAt)}</small></p>) : <p className="muted-copy">No updates to show right now.</p>}</div></>}
+          {user.role === 'volunteer' && <><div className="dashboard-section-heading"><div><p className="eyebrow">YOUR VOLUNTEER CALLS</p><h2>Applications & assignments</h2></div><Link className="button button-outline" to="/volunteer/opportunities">Browse opportunities <ArrowRight size={16} /></Link></div>{dashboard.applications?.length ? dashboard.applications.map((application) => <article className="registration-row" key={application._id}><div className="registration-info"><strong>{application.event.title}</strong><span>{application.event.venue} / {formatDate(application.event.startAt)}</span><small>{application.roleInterest}{application.duty ? ` / ${application.duty}` : ''}{application.shift ? ` / ${application.shift}` : ''}</small></div><span className={`status-pill status-${application.status}`}>{application.status}</span>{application.status === 'accepted' && <Link className="button button-outline button-small" to={`/volunteer/events/${application.event._id}/checkin`}>Check-in desk <ArrowRight size={14} /></Link>}</article>) : <div className="empty-state"><Users size={22} /><strong>Ready to be part of the crew?</strong><span>Find an event that could use a hand.</span><Link to="/volunteer/opportunities" className="text-link">Browse opportunities <ArrowRight size={15} /></Link></div>}</>}
         </>
       )}
       <Footer />
@@ -527,16 +537,17 @@ function Metric({ label, value, icon }) {
 }
 
 function AdminPanel() {
+  const { user: currentUser } = useSession()
   const [users, setUsers] = useState([])
   const [error, setError] = useState('')
   useEffect(() => { api('/admin/users?limit=20').then(({ users: results }) => setUsers(results)).catch((failure) => setError(failure.message)) }, [])
-  const setRole = async (id, role) => {
+  const updateUser = async (id, values) => {
     try {
-      await api(`/admin/users/${id}`, { method: 'PATCH', body: { role } })
-      setUsers((current) => current.map((user) => user._id === id ? { ...user, role } : user))
+      const { user: updated } = await api(`/admin/users/${id}`, { method: 'PATCH', body: values })
+      setUsers((current) => current.map((user) => user._id === id ? { ...user, ...updated } : user))
     } catch (failure) { setError(failure.message) }
   }
-  return <section className="admin-panel"><div className="dashboard-section-heading"><div><p className="eyebrow">ACCESS CONTROL</p><h2>Account roles</h2></div></div><Notice>{error}</Notice><div className="dashboard-table-wrap"><table className="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Change role</th></tr></thead><tbody>{users.map((user) => <tr key={user._id}><td>{user.name}</td><td>{user.email}</td><td>{user.role}</td><td><select value={user.role} onChange={(event) => setRole(user._id, event.target.value)} aria-label={`Change role for ${user.name}`}>{['student', 'organiser', 'volunteer', 'administrator'].map((role) => <option key={role}>{role}</option>)}</select></td></tr>)}</tbody></table></div></section>
+  return <section className="admin-panel"><div className="dashboard-section-heading"><div><p className="eyebrow">ACCESS CONTROL</p><h2>Account roles</h2></div></div><Notice>{error}</Notice><div className="dashboard-table-wrap"><table className="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Change role</th><th>Account</th></tr></thead><tbody>{users.map((user) => <tr key={user._id}><td>{user.name}</td><td>{user.email}</td><td>{user.role}</td><td><select value={user.role} onChange={(event) => updateUser(user._id, { role: event.target.value })} aria-label={`Change role for ${user.name}`}>{['student', 'organiser', 'volunteer', 'administrator'].map((role) => <option key={role}>{role}</option>)}</select></td><td><button className="button button-outline button-small" type="button" disabled={user._id === currentUser.id} onClick={() => updateUser(user._id, { active: !user.active })}>{user.active ? 'Suspend' : 'Reactivate'}</button></td></tr>)}</tbody></table></div></section>
 }
 
 function OrganizerEventForm() {
@@ -559,7 +570,7 @@ function OrganizerEventForm() {
       navigate('/dashboard')
     } catch (failure) { setError(failure.message) } finally { setBusy(false) }
   }
-  return <main className="form-page"><Link to="/dashboard" className="back-link">â† Back to dashboard</Link><p className="eyebrow">ORGANISER DESK / NEW LISTING</p><h1>Put it on the <em>calendar.</em></h1><p className="form-intro">Events start as drafts. Publish when the details are ready.</p><form className="event-form" onSubmit={submit}>
+  return <main className="form-page"><Link to="/dashboard" className="back-link">Back to dashboard</Link><p className="eyebrow">ORGANISER DESK / NEW LISTING</p><h1>Put it on the <em>calendar.</em></h1><p className="form-intro">Events start as drafts. Publish when the details are ready.</p><form className="event-form" onSubmit={submit}>
     <label>Event title<input name="title" value={form.title} onChange={change} required minLength="3" maxLength="140" placeholder="Give it a name people will remember" /></label>
     <label>Description<textarea name="description" rows="5" value={form.description} onChange={change} required minLength="10" maxLength="8000" placeholder="What should people know before they join?" /></label>
     <div className="form-row"><label>Category<select name="category" value={form.category} onChange={change}>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select></label><label>Venue<input name="venue" value={form.venue} onChange={change} required maxLength="200" placeholder="Campus venue" /></label></div>
@@ -567,8 +578,8 @@ function OrganizerEventForm() {
     <div className="form-row"><label>Registration deadline<input name="registrationDeadline" type="datetime-local" value={form.registrationDeadline} onChange={change} required /></label><label>Capacity<input name="capacity" type="number" value={form.capacity} onChange={change} min="1" max="100000" required /></label></div>
     <div className="form-row"><label>Entry fee<input value="Free" readOnly /><small>All CampusFest events are free to attend.</small></label><label>Contact email<input name="contactEmail" type="email" value={form.contactEmail} onChange={change} /></label></div>
     <label>Eligibility <span className="optional">(optional)</span><input name="eligibility" value={form.eligibility} onChange={change} maxLength="1000" /></label><label>Rules <span className="optional">(optional)</span><textarea name="rules" rows="3" value={form.rules} onChange={change} maxLength="3000" /></label>
-    <label className="checkbox-label"><input type="checkbox" name="volunteersNeeded" checked={form.volunteersNeeded} onChange={change} /> Weâ€™re looking for volunteers</label><label className="checkbox-label"><input type="checkbox" name="publishNow" checked={form.publishNow || false} onChange={change} /> Publish once this event is saved</label>
-    <Notice>{error}</Notice><button type="submit" className="button button-primary" disabled={busy}>{busy ? 'Savingâ€¦' : 'Save event'} <ArrowRight size={16} /></button>
+    <label className="checkbox-label"><input type="checkbox" name="volunteersNeeded" checked={form.volunteersNeeded} onChange={change} /> We're looking for volunteers</label><label className="checkbox-label"><input type="checkbox" name="publishNow" checked={form.publishNow || false} onChange={change} /> Publish once this event is saved</label>
+    <Notice>{error}</Notice><button type="submit" className="button button-primary" disabled={busy}>{busy ? 'Saving...' : 'Save event'} <ArrowRight size={16} /></button>
   </form><Footer /></main>
 }
 
@@ -583,15 +594,13 @@ function ParticipantsPage() {
     event.preventDefault()
     setMessage('')
     try {
-      const { registration, certificateEmailSent } = await api(`/events/${id}/check-in`, { method: 'POST', body: { token } })
-      setMessage(certificateEmailSent
-        ? `Checked in ${registration.student} · certificate emailed to the attendee.`
-        : `Checked in ${registration.student} · certificate email could not be sent; verify SMTP configuration.`)
+      const { registration } = await api(`/events/${id}/check-in`, { method: 'POST', body: { token } })
+      setMessage(`Checked in ${registration.student}.`)
       setToken('')
       setData((current) => current.map((item) => item.reference === registration.reference ? { ...item, status: 'attended', checkedInAt: registration.checkedInAt } : item))
     } catch (failure) { setError(failure.message) }
   }
-  return <main className="dashboard-shell"><Link to="/dashboard" className="back-link">â† Back to dashboard</Link><p className="eyebrow">ATTENDANCE DESK</p><h1>Participant <em>list.</em></h1><Notice>{error}</Notice><Notice tone="success">{message}</Notice><form className="checkin-form" onSubmit={checkIn}><label>Manual check-in token<input value={token} onChange={(event) => setToken(event.target.value)} minLength="40" maxLength="100" required placeholder="Scan QR or enter the attendee token" /></label><button className="button button-primary" type="submit">Check in <Check size={16} /></button></form><a className="text-link export-link" href={`/api/events/${id}/participants.csv`}>Export participant CSV <ExternalLink size={15} /></a><div className="dashboard-table-wrap"><table className="data-table"><thead><tr><th>Participant</th><th>Registration</th><th>Registered</th><th>Status</th><th>Attendance</th></tr></thead><tbody>{data.map((row) => <tr key={row._id}><td><strong>{row.student.name}</strong><small>{row.student.email}</small></td><td>{row.reference}</td><td>{formatDate(row.createdAt)}</td><td><span className={`status-pill status-${row.status}`}>{row.status}</span></td><td>{row.checkedInAt ? formatDate(row.checkedInAt) : 'Not checked in'}</td></tr>)}</tbody></table></div><Footer /></main>
+  return <main className="dashboard-shell"><Link to="/dashboard" className="back-link">Back to dashboard</Link><p className="eyebrow">ATTENDANCE DESK</p><h1>Participant <em>list.</em></h1><Notice>{error}</Notice><Notice tone="success">{message}</Notice><form className="checkin-form" onSubmit={checkIn}><label>Manual check-in token<input value={token} onChange={(event) => setToken(event.target.value)} minLength="40" maxLength="100" required placeholder="Scan QR or enter the attendee token" /></label><button className="button button-primary" type="submit">Check in <Check size={16} /></button></form><a className="text-link export-link" href={`/api/events/${id}/participants.csv`}>Export participant CSV <ExternalLink size={15} /></a><div className="dashboard-table-wrap"><table className="data-table"><thead><tr><th>Participant</th><th>Registration</th><th>Registered</th><th>Status</th><th>Attendance</th></tr></thead><tbody>{data.map((row) => <tr key={row._id}><td><strong>{row.student.name}</strong><small>{row.student.email}</small></td><td>{row.reference}</td><td>{formatDate(row.createdAt)}</td><td><span className={`status-pill status-${row.status}`}>{row.status}</span></td><td>{row.checkedInAt ? formatDate(row.checkedInAt) : 'Not checked in'}</td></tr>)}</tbody></table></div><Footer /></main>
 }
 
 function VolunteerManagementPage() {
@@ -613,7 +622,7 @@ function VolunteerManagementPage() {
     setMessage('')
     const form = new FormData(formEvent.currentTarget)
     try {
-      const { application: updated, emailNotificationSent } = await api(`/events/volunteers/${application._id}`, {
+      const { application: updated } = await api(`/events/volunteers/${application._id}`, {
         method: 'PATCH',
         body: {
           status: form.get('status'),
@@ -622,9 +631,7 @@ function VolunteerManagementPage() {
         },
       })
       setApplications((current) => current.map((row) => row._id === updated._id ? { ...row, ...updated } : row))
-      setMessage(emailNotificationSent
-        ? `Updated ${application.volunteer.name}; a status email was sent.`
-        : `Updated ${application.volunteer.name}. Email delivery is not configured.`)
+      setMessage(`Updated ${application.volunteer.name}.`)
     } catch (failure) {
       setError(failure.message)
     } finally {
@@ -686,14 +693,12 @@ function VolunteerCheckinPage() {
     setError('')
     setMessage('')
     try {
-      const { registration, certificateEmailSent } = await api(`/events/${id}/check-in`, { method: 'POST', body: { token } })
-      setMessage(certificateEmailSent
-        ? `Checked in ${registration.student} · certificate emailed to the attendee.`
-        : `Checked in ${registration.student} · certificate email could not be sent; verify SMTP configuration.`)
+      const { registration } = await api(`/events/${id}/check-in`, { method: 'POST', body: { token } })
+      setMessage(`Checked in ${registration.student}.`)
       setToken('')
     } catch (failure) { setError(failure.message) }
   }
-  return <main className="form-page"><Link to="/dashboard" className="back-link">â† Back to dashboard</Link><p className="eyebrow">VOLUNTEER / CHECK-IN</p><h1>Welcome them <em>in.</em></h1><p className="form-intro">Scan a check-in pass with a QR reader or enter the attendee’s manual code. An attendance certificate is emailed after check-in when SMTP is configured.</p><form className="event-form checkin-form" onSubmit={checkIn}><label>Attendance pass code<input value={token} onChange={(event) => setToken(event.target.value)} required minLength="40" maxLength="100" placeholder="Enter the attendee’s manual check-in code" /></label><Notice>{error}</Notice><Notice tone="success">{message}</Notice><button className="button button-primary" type="submit">Validate check-in <ShieldCheck size={16} /></button></form><Footer /></main>
+  return <main className="form-page"><Link to="/dashboard" className="back-link">Back to dashboard</Link><p className="eyebrow">VOLUNTEER / CHECK-IN</p><h1>Welcome them <em>in.</em></h1><p className="form-intro">Scan a check-in pass with a QR reader or enter the attendee’s manual code. An attendance certificate is emailed after check-in when SMTP is configured.</p><form className="event-form checkin-form" onSubmit={checkIn}><label>Attendance pass code<input value={token} onChange={(event) => setToken(event.target.value)} required minLength="40" maxLength="100" placeholder="Enter the attendee’s manual check-in code" /></label><Notice>{error}</Notice><Notice tone="success">{message}</Notice><button className="button button-primary" type="submit">Validate check-in <ShieldCheck size={16} /></button></form><Footer /></main>
 }
 
 function OpportunitiesPage() {
@@ -718,7 +723,7 @@ function OpportunitiesPage() {
       setEvents((current) => current.filter((event) => event._id !== eventId))
     } catch (failure) { setError(failure.message) } finally { setBusy('') }
   }
-  return <main className="page-shell"><div className="page-heading"><p className="eyebrow">LEND A HAND / FIND YOUR CREW</p><h1>Be part of <em>the making.</em></h1><p>Get behind the scenes and help make a campus moment happen.</p></div><Notice>{error}</Notice><Notice tone="success">{notice}</Notice>{events.length ? <div className="event-grid">{events.map((event) => <article className="opportunity-card" key={event._id}><span className="event-category">{event.category}</span><h2>{event.title}</h2><p><MapPin size={15} />{event.venue}</p><p><CalendarDays size={15} />{formatDate(event.startAt)}</p>{applyingTo === event._id ? <form className="volunteer-application-form" onSubmit={(formEvent) => apply(event._id, formEvent)}><label>Role youâ€™d like to help with<input value={roleInterest} onChange={(formEvent) => setRoleInterest(formEvent.target.value)} minLength="2" maxLength="100" required placeholder="e.g. check-in desk" /></label><button className="button button-primary" type="submit" disabled={busy === event._id}>{busy === event._id ? 'Applyingâ€¦' : 'Submit application'} <ArrowRight size={16} /></button></form> : <button className="button button-primary" type="button" onClick={() => setApplyingTo(event._id)}>Apply to help <ArrowRight size={16} /></button>}</article>)}</div> : !error && <div className="empty-state"><Users size={22} /><strong>No volunteer calls right now.</strong><span>Check again closer to the next campus event.</span></div>}<Footer /></main>
+  return <main className="page-shell"><div className="page-heading"><p className="eyebrow">LEND A HAND / FIND YOUR CREW</p><h1>Be part of <em>the making.</em></h1><p>Get behind the scenes and help make a campus moment happen.</p></div><Notice>{error}</Notice><Notice tone="success">{notice}</Notice>{events.length ? <div className="event-grid">{events.map((event) => <article className="opportunity-card" key={event._id}><span className="event-category">{event.category}</span><h2>{event.title}</h2><p><MapPin size={15} />{event.venue}</p><p><CalendarDays size={15} />{formatDate(event.startAt)}</p>{applyingTo === event._id ? <form className="volunteer-application-form" onSubmit={(formEvent) => apply(event._id, formEvent)}><label>Role you'd like to help with<input value={roleInterest} onChange={(formEvent) => setRoleInterest(formEvent.target.value)} minLength="2" maxLength="100" required placeholder="e.g. check-in desk" /></label><button className="button button-primary" type="submit" disabled={busy === event._id}>{busy === event._id ? 'Applying...' : 'Submit application'} <ArrowRight size={16} /></button></form> : <button className="button button-primary" type="button" onClick={() => setApplyingTo(event._id)}>Apply to help <ArrowRight size={16} /></button>}</article>)}</div> : !error && <div className="empty-state"><Users size={22} /><strong>No volunteer calls right now.</strong><span>Check again closer to the next campus event.</span></div>}<Footer /></main>
 }
 
 function SimpleInfo({ title, children }) {
@@ -751,8 +756,8 @@ function App() {
         <Route path="/volunteer/opportunities" element={<Protected roles={['volunteer']}><OpportunitiesPage /></Protected>} />
         <Route path="/privacy" element={<SimpleInfo title="Privacy, with purpose.">CampusFest stores the account and participation information needed to run free event registration, attendance certificates, and email notifications. SMTP delivery is controlled by the service operator.</SimpleInfo>} />
         <Route path="/terms" element={<SimpleInfo title="The ground rules.">Use your own account, follow event organiser guidance, and keep your private attendance pass to yourself. All CampusFest events are free; event cancellation and eligibility terms are set by the relevant organiser.</SimpleInfo>} />
-        <Route path="/unauthorised" element={<SimpleInfo title="This space isnâ€™t yours to enter.">Your account does not have permission to open this page.</SimpleInfo>} />
-        <Route path="*" element={<SimpleInfo title="That page wandered off.">We canâ€™t find the page you were looking for.</SimpleInfo>} />
+        <Route path="/unauthorised" element={<SimpleInfo title="This space isn't yours to enter.">Your account does not have permission to open this page.</SimpleInfo>} />
+        <Route path="*" element={<SimpleInfo title="That page wandered off.">We can't find the page you were looking for.</SimpleInfo>} />
       </Routes>
     </SessionContext.Provider>
   )

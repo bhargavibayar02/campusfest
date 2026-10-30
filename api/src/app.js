@@ -13,6 +13,7 @@ import adminRoutes from './routes/admin.js'
 
 export const app = express()
 app.disable('x-powered-by')
+if (config.NODE_ENV === 'production') app.set('trust proxy', 1)
 app.use(helmet())
 app.use(cors({ origin: config.FRONTEND_URL, credentials: true, methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'] }))
 app.use(express.json({

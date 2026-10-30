@@ -58,6 +58,7 @@ async function removeLegacyPaymentFields() {
 try {
   await connectDatabase()
   await removeLegacyPaymentFields()
+  await Promise.all(Object.values(mongoose.models).map((model) => model.init()))
   app.listen(config.API_PORT, () => {
     console.log(`CampusFest API listening on http://localhost:${config.API_PORT}`)
   })

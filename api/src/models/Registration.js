@@ -16,6 +16,6 @@ const registrationSchema = new mongoose.Schema(
 
 registrationSchema.index(
   { student: 1, event: 1 },
-  { unique: true, partialFilterExpression: { status: { $ne: 'cancelled' } } },
+  { unique: true, partialFilterExpression: { status: { $in: ['confirmed', 'attended'] } } },
 )
 export const Registration = mongoose.model('Registration', registrationSchema)

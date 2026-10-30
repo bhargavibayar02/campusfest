@@ -17,6 +17,13 @@ const missing = accounts.filter((account) => !process.env[account.env])
 if (missing.length) {
   throw new Error(`Set unique development passwords before seeding: ${missing.map(({ env }) => env).join(', ')}`)
 }
+const invalid = accounts.filter((account) => process.env[account.env].length < 10 || process.env[account.env].length > 128)
+if (invalid.length) {
+  throw new Error(`Demo passwords must be 10-128 characters: ${invalid.map(({ env }) => env).join(', ')}`)
+}
+if (new Set(accounts.map((account) => process.env[account.env])).size !== accounts.length) {
+  throw new Error('Each demo account must use a different password.')
+}
 
 let mongodInstance = null
 try {

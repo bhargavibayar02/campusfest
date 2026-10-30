@@ -125,6 +125,26 @@ router.patch('/:id', requireSameOrigin, requireAuth, requireRole('organiser', 'a
   res.json({ success: true, data: { event } })
 })
 
+router.delete('/:id', requireSameOrigin, requireAuth, requireRole('organiser', 'administrator'), async (req, res) => {
+  const event = await ownedEvent(req, req.params.id)
+  if (!['draft', 'cancelled'].includes(event.status)) {
+    throw fail(409, 'Only draft or cancelled events can be deleted. Cancel a published event first.')
+  }
+
+  const [registrationCount, applicationCount, feedbackCount] = await Promise.all([
+    Registration.countDocuments({ event: event.id }),
+    VolunteerApplication.countDocuments({ event: event.id }),
+    Feedback.countDocuments({ event: event.id }),
+  ])
+  if (registrationCount || applicationCount || feedbackCount) {
+    throw fail(409, 'This event has registration, volunteer, or feedback history and cannot be deleted.')
+  }
+
+  const result = await Event.deleteOne({ _id: event.id, status: { $in: ['draft', 'cancelled'] } })
+  if (!result.deletedCount) throw fail(409, 'This event changed and could not be deleted. Refresh and try again.')
+  res.json({ success: true, data: { deleted: true } })
+})
+
 router.post('/:id/publish', requireSameOrigin, requireAuth, requireRole('organiser', 'administrator'), async (req, res) => {
   const event = await ownedEvent(req, req.params.id)
   if (event.startAt <= new Date() || event.registrationDeadline <= new Date()) throw fail(400, 'Past events or expired registration windows cannot be published.')
@@ -141,10 +161,13 @@ router.post('/:id/cancel', requireSameOrigin, requireAuth, requireRole('organise
     .populate('student', 'name email')
     .select('student')
   const studentIds = registrations.map(({ student }) => student._id)
-  await Registration.updateMany(
+  const cancelledRegistrations = await Registration.updateMany(
     { event: event.id, status: 'confirmed' },
     { $set: { status: 'cancelled', cancelledAt: new Date() }, $unset: { attendanceToken: 1 } },
   )
+  if (cancelledRegistrations.modifiedCount > 0) {
+    await Event.updateOne({ _id: event.id }, { $inc: { registeredCount: -cancelledRegistrations.modifiedCount } })
+  }
   if (studentIds.length > 0) {
     await Notification.insertMany(studentIds.map((user) => ({ user, message: `The event "${event.title}" has been cancelled.` })))
     await Promise.all(registrations.map(({ student }) => sendEventCancelled({

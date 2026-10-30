@@ -7,7 +7,7 @@ dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) })
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  API_PORT: z.coerce.number().int().positive().default(4000),
+  API_PORT: z.coerce.number().int().positive().default(Number(process.env.PORT) || 4000),
   MONGODB_URI: z.string().min(1).default('mongodb://127.0.0.1:27017/campusfest'),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
@@ -17,6 +17,14 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.preprocess((value) => value === '' ? undefined : value, z.string().email().optional()),
+}).superRefine((value, context) => {
+  if (value.NODE_ENV !== 'production') return
+  if (/localhost|127\.0\.0\.1/i.test(value.FRONTEND_URL)) {
+    context.addIssue({ code: 'custom', path: ['FRONTEND_URL'], message: 'Set the public frontend URL in production.' })
+  }
+  if (/localhost|127\.0\.0\.1/i.test(value.MONGODB_URI)) {
+    context.addIssue({ code: 'custom', path: ['MONGODB_URI'], message: 'Set a remote MongoDB connection in production.' })
+  }
 })
 
 const parsed = schema.safeParse(process.env)
