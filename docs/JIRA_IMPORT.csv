@@ -1,0 +1,33 @@
+Work item ID,Work type,Summary,Description,Priority,Labels,Parent
+1,Epic,Project Setup and Architecture,Establish the app workspace database configuration UI system and API conventions.,High,campusfest-setup,
+2,Epic,Authentication and Role Management,Implement student signup secure sessions editable profiles and role-specific access.,Highest,campusfest-auth,
+3,Epic,Event Management,Create publish discover and manage free campus events.,Highest,campusfest-events,
+4,Epic,Free Registration,Enforce duplicate-safe registration capacity limits cancellation and private attendance passes.,Highest,campusfest-registration,
+5,Epic,Attendance and Certificates,Authorise check-in and generate attendee-only PDF certificates.,High,campusfest-attendance,
+6,Epic,Student and Operations Workspaces,Provide role-specific student organiser and volunteer dashboards.,High,campusfest-workspaces,
+7,Epic,Email and In-App Notifications,Deliver lifecycle emails through optional configured SMTP and in-app notices.,High,campusfest-notifications,
+8,Epic,Administrator Dashboard,Provide privileged account management audit and platform metrics.,Medium,campusfest-admin,
+9,Epic,Feedback and Reports,Collect attendance-eligible feedback and authorised aggregates/exports.,Medium,campusfest-feedback,
+10,Epic,Security and Testing,Prove role boundaries data integrity accessibility and key API flows.,Highest,campusfest-quality,
+11,Epic,Deployment and Documentation,Document environment setup deployment preparation and Jira workflow.,High,campusfest-release,
+12,Story,Run the React and API workspace,"As a developer I can install run test and build from the documented root commands. Acceptance: npm install resolves both workspaces; npm run dev starts services; npm test and npm run build work.",Highest,campusfest-setup,1
+13,Story,Student and volunteer signup and login,"As a student or volunteer I can create my account and sign in. Acceptance: public signup can create only student or volunteer accounts; organiser/admin roles cannot be self-selected; passwords are hashed; invalid login is generic.",Highest,campusfest-auth,2
+14,Story,Seed organiser volunteer and demo accounts,"As a demo operator I can create role-specific accounts using unique local passwords. Acceptance: seed creates student organiser volunteer administrator and fictional free events; passwords are not logged.",Highest,campusfest-auth,2
+15,Story,View and edit my account profile,"As a signed-in user I can view my name email role and profile details in My space. Acceptance: name department and student year update only for the current account.",High,campusfest-auth,2
+16,Story,Create and publish a free event,"As an organiser I can create and publish a free campus event. Acceptance: API validates event data and does not accept a payable fee.",Highest,campusfest-events,3
+17,Story,Discover campus events,"As a student I can search filter and inspect public future events. Acceptance: only published future events are listed; category/date filters and pagination work.",Highest,campusfest-events,3
+18,Story,Register for a free event safely,"As a student I can reserve a seat. Acceptance: duplicate registration is rejected; atomic capacity never oversells; confirmed registration receives a private pass.",Highest,campusfest-registration,4
+19,Story,Cancel a future free registration,"As a student I can cancel before an event starts. Acceptance: cancellation releases one seat once and removes the attendee's pass.",High,campusfest-registration,4
+20,Story,Check in an authorised attendee,"As event staff I can validate an attendee pass. Acceptance: only owner admin or accepted event volunteer can check in; invalid or repeated passes are rejected.",High,campusfest-attendance,5
+21,Story,Generate and download an attendance certificate,"As a checked-in attendee I can download my PDF certificate. Acceptance: only the attendee can download a certificate for their own checked-in registration.",High,campusfest-attendance,5
+22,Story,View student activity and notifications,"As a student I can see my registrations passes status certificates and recent updates. Acceptance: no other student's data is exposed.",High,campusfest-workspaces,6
+23,Story,Manage event roster and CSV export,"As an organiser I can manage my roster. Acceptance: owner check is enforced; exported fields are limited; spreadsheet formula prefixes are neutralised.",High,campusfest-workspaces,6
+24,Story,Apply for volunteer duty,"As a volunteer I can apply once and track my application. Acceptance: owner can accept decline and set duty/shift; only accepted volunteers can check in.",High,campusfest-workspaces,6
+25,Story,Review and assign event volunteers,"As an organiser I can review applicants for an event I own. Acceptance: applicant name/email and role interest are visible; organiser can accept/decline and set duty/shift; accepted volunteers can check in.",High,campusfest-workspaces,6
+26,Story,Send email lifecycle notifications,"As a user I receive welcome registration cancellation volunteer-status and attendance-certificate emails when SMTP is configured. Acceptance: delivery failures are reported without losing the underlying app action.",High,campusfest-notifications,7
+27,Story,Manage users and audit changes,"As an administrator I can change roles or suspend accounts. Acceptance: admin-only endpoints; self-suspension is rejected; changes are audited; password hashes never leave the API.",High,campusfest-admin,8
+28,Story,Submit attendance-eligible feedback,"As an attendee I can rate an event once. Acceptance: only checked-in registration may submit a 1-5 rating; organiser sees an owned-event aggregate.",Medium,campusfest-feedback,9
+29,Task,Add disposable MongoDB integration tests,"As the engineering team we can verify auth capacity ownership cancellation attendance certificates and feedback against test-only database state.",Highest,campusfest-quality,10
+30,Task,Complete accessibility and responsive review,"As a user I can navigate on mobile and by keyboard. Acceptance: visible focus labels contrast responsive layout and reduced-motion behavior are verified.",High,campusfest-quality,10
+31,Task,Document setup SMTP and Jira import,"As an operator I can configure MongoDB sessions and optional SMTP and import the backlog. Acceptance: env variables and field mapping are documented; no secrets are committed.",High,campusfest-release,11
+32,Story,Deploy a staging environment,"As an operator I can verify a staging release. Acceptance: HTTPS same-origin API routing CORS secrets database SMTP and health checks are validated before launch.",Medium,campusfest-release,11

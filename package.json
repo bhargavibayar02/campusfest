@@ -1,0 +1,17 @@
+{
+  "name": "campusfest",
+  "private": true,
+  "workspaces": [
+    "web",
+    "api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w api\" \"npm run dev -w web\"",
+    "build": "npm run build -w web",
+    "test": "npm run test -w api && npm run test -w web",
+    "seed": "npm run seed -w api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
